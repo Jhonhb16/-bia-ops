@@ -5,6 +5,7 @@ import { formatCurrency, formatPercent, PLAN_LABELS, type HealthStatus, type Pla
 import type { getCeoDashboard } from "@/lib/data-store";
 import { MetricCard } from "@/components/shared/MetricCard";
 import { MiniChart } from "@/components/shared/MiniChart";
+import { ConfigPanel } from "./ConfigPanel";
 
 type CeoData = Awaited<ReturnType<typeof getCeoDashboard>>;
 type SortKey = "roas" | "spend" | "health";
@@ -232,6 +233,8 @@ export function CeoDashboard({ data }: { data: CeoData }) {
           </div>
         </div>
       </section>
+
+      <ConfigPanel />
     </div>
   );
 }
