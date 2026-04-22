@@ -1,0 +1,13 @@
+{
+  "name": "@bia-ops/database",
+  "private": true,
+  "version": "1.0.0",
+  "scripts": {
+    "db:start": "supabase start",
+    "db:stop": "supabase stop",
+    "db:reset": "supabase db reset",
+    "db:push": "supabase db push",
+    "db:status": "supabase migration list",
+    "db:new": "supabase migration new"
+  }
+}

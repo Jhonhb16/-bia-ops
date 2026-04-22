@@ -1,0 +1,28 @@
+{
+  "name": "bia-ops",
+  "private": true,
+  "version": "1.0.0",
+  "description": "BIA OPS - plataforma operativa SaaS para Bia Agency.",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "concurrently -n WEB,API -c magenta,cyan \"npm:dev -w @bia-ops/web\" \"npm:dev -w @bia-ops/api\"",
+    "dev:web": "npm run dev -w @bia-ops/web",
+    "dev:api": "npm run dev -w @bia-ops/api",
+    "build": "npm run build -w @bia-ops/shared && npm run build -w @bia-ops/web && npm run build -w @bia-ops/api",
+    "start": "concurrently -n WEB,API -c magenta,cyan \"npm:start -w @bia-ops/web\" \"npm:start -w @bia-ops/api\"",
+    "test": "node tests/run.cjs",
+    "lint": "npm run lint -w @bia-ops/web && npm run lint -w @bia-ops/api",
+    "typecheck": "npm run typecheck -w @bia-ops/shared && npm run typecheck -w @bia-ops/web && npm run typecheck -w @bia-ops/api"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2",
+    "typescript": "^5.8.3"
+  },
+  "engines": {
+    "node": ">=20.11.0",
+    "npm": ">=10.0.0"
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git -C \"D:\\\\Bia ops\" log --oneline -10)",
+      "Bash(git config *)"
+    ]
+  }
+}

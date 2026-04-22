@@ -1,0 +1,35 @@
+name: Deploy
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Deploy over SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_KEY }}
+          port: ${{ secrets.SSH_PORT }}
+          script_stop: true
+          script: |
+            cd "${{ secrets.APP_DIR }}"
+            git fetch origin main
+            git reset --hard origin/main
+            npm install
+            npm run build
+            if pm2 describe bia-ops >/dev/null 2>&1; then
+              pm2 restart bia-ops --update-env
+            else
+              pm2 start npm --name bia-ops -- run start
+            fi
