@@ -1,5 +1,7 @@
 import Link from "next/link";
 import type { UserRole } from "@bia-ops/shared";
+import { LiveClock } from "./LiveClock";
+import { AutoRefresh } from "./AutoRefresh";
 
 interface NavItem {
   href: string;
@@ -36,12 +38,14 @@ export function AppShell({ title, subtitle, role, userName, navItems, children }
         </nav>
       </aside>
       <main className="main-area">
+        <AutoRefresh />
         <header className="topbar">
           <div className="topbar-title">
             <h1 className="page-title">{title}</h1>
             <p>{subtitle}</p>
           </div>
           <div className="avatar-row">
+            <LiveClock />
             <button className="icon-button" title="Notificaciones" type="button">
               <span className="material-symbols-outlined">notifications</span>
             </button>

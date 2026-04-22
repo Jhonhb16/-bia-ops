@@ -3,6 +3,8 @@ import { CeoDashboard } from "@/components/ceo/CeoDashboard";
 import { getSession } from "@/lib/auth";
 import { getCeoDashboard, getUserById } from "@/lib/data-store";
 
+export const dynamic = "force-dynamic";
+
 export default async function CeoPage() {
   const session = getSession();
   const user = session ? getUserById(session.userId) : null;

@@ -3,6 +3,8 @@ import { ExpertWorkspace } from "@/components/expert/ExpertWorkspace";
 import { getSession } from "@/lib/auth";
 import { getExpertDashboard, getUserById } from "@/lib/data-store";
 
+export const dynamic = "force-dynamic";
+
 export default async function ExpertPage() {
   const session = getSession();
   const user = session ? getUserById(session.userId) : null;
