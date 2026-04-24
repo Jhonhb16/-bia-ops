@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Logo } from "./AppShell";
+import { Icon } from "./Icon";
 
 type RoleChoice = "ceo" | "expert";
 
@@ -73,12 +74,12 @@ export function LoginForm() {
 
           <div className="role-grid" style={{ gridTemplateColumns: "1fr 1fr" }}>
             <button className={`role-option ${role === "ceo" ? "active" : ""}`} type="button" onClick={() => setRole("ceo")}>
-              <span className="material-symbols-outlined">query_stats</span>
+              <Icon name="query_stats" size={20} />
               <strong style={{ display: "block", marginTop: 8 }}>CEO</strong>
               <span className="small">Solo lectura</span>
             </button>
             <button className={`role-option ${role === "expert" ? "active" : ""}`} type="button" onClick={() => setRole("expert")}>
-              <span className="material-symbols-outlined">fact_check</span>
+              <Icon name="fact_check" size={20} />
               <strong style={{ display: "block", marginTop: 8 }}>Experto</strong>
               <span className="small">Operacion diaria</span>
             </button>
@@ -112,7 +113,7 @@ export function LoginForm() {
           {error ? <p className="badge red" style={{ marginTop: 16 }}>{error}</p> : null}
 
           <button className="button" type="submit" disabled={loading} style={{ width: "100%", marginTop: 18 }}>
-            <span className="material-symbols-outlined">login</span>
+            <Icon name="login" size={16} />
             {loading ? "Entrando..." : "Entrar"}
           </button>
 

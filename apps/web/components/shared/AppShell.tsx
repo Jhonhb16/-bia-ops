@@ -1,7 +1,10 @@
 import Link from "next/link";
+import Image from "next/image";
 import type { UserRole } from "@bia-ops/shared";
 import { LiveClock } from "./LiveClock";
 import { AutoRefresh } from "./AutoRefresh";
+import { Icon } from "./Icon";
+import { Search } from "lucide-react";
 
 interface NavItem {
   href: string;
@@ -11,12 +14,23 @@ interface NavItem {
   badge?: number;
 }
 
+interface NavGroup {
+  group: string;
+  href?: never;
+  label?: never;
+  icon?: never;
+  active?: never;
+  badge?: never;
+}
+
+type NavEntry = NavItem | NavGroup;
+
 interface AppShellProps {
   title: string;
   subtitle: string;
   role: UserRole;
   userName: string;
-  navItems: NavItem[];
+  navItems: NavEntry[];
   children: React.ReactNode;
 }
 
@@ -26,36 +40,57 @@ export function AppShell({ title, subtitle, role, userName, navItems, children }
       <aside className="sidebar">
         <Logo />
         <nav className="nav-stack">
-          {navItems.map((item) => (
-            <Link key={item.href} className={`nav-link ${item.active ? "active" : ""}`} href={item.href}>
-              <span className="nav-label">
-                <span className="material-symbols-outlined">{item.icon}</span>
-                {item.label}
-              </span>
-              {typeof item.badge === "number" && item.badge > 0 ? <span className="badge red">{item.badge}</span> : null}
-            </Link>
-          ))}
+          {navItems.map((item, i) => {
+            if ("group" in item && item.group) {
+              return <span key={i} className="nav-group">{item.group}</span>;
+            }
+            const navItem = item as NavItem;
+            return (
+              <Link key={navItem.href} className={`nav-link ${navItem.active ? "active" : ""}`} href={navItem.href}>
+                <span className="nav-label">
+                  <Icon name={navItem.icon} size={16} />
+                  {navItem.label}
+                </span>
+                {typeof navItem.badge === "number" && navItem.badge > 0 ? (
+                  <span className="badge red">{navItem.badge}</span>
+                ) : null}
+              </Link>
+            );
+          })}
         </nav>
+        <div className="sidebar-footer">
+          <div className="sf-avatar">{initials(userName)}</div>
+          <div className="sf-info">
+            <span className="sf-name">{userName}</span>
+            <span className="sf-role">{roleLabel(role)}</span>
+          </div>
+        </div>
       </aside>
+
       <main className="main-area">
         <AutoRefresh />
         <header className="topbar">
-          <div className="topbar-title">
-            <h1 className="page-title">{title}</h1>
-            <p>{subtitle}</p>
+          <div className="topbar-breadcrumb">
+            <span>Bia Ops</span>
+            <span style={{ color: "var(--fg-faint)" }}>/</span>
+            <span className="here">{title}</span>
           </div>
-          <div className="avatar-row">
+          <div className="topbar-search">
+            <Search size={14} color="var(--fg-dim)" />
+            <input placeholder="Buscar campanas, clientes…" readOnly />
+            <span className="topbar-kbd">⌘K</span>
+          </div>
+          <div className="topbar-actions">
             <LiveClock />
             <button className="icon-button" title="Notificaciones" type="button">
-              <span className="material-symbols-outlined">notifications</span>
+              <Icon name="notifications" size={15} />
+              <span className="notification-dot" />
             </button>
             <span className="badge purple">{roleLabel(role)}</span>
-            <div className="avatar" title={userName}>
-              {initials(userName)}
-            </div>
+            <div className="avatar" title={userName}>{initials(userName)}</div>
             <form action="/api/auth/logout" method="post">
               <button className="icon-button" title="Cerrar sesion" type="submit">
-                <span className="material-symbols-outlined">logout</span>
+                <Icon name="logout" size={15} />
               </button>
             </form>
           </div>
@@ -69,17 +104,13 @@ export function AppShell({ title, subtitle, role, userName, navItems, children }
 export function Logo() {
   return (
     <div className="logo">
-      <div className="logo-mark">B</div>
+      <Image src="/assets/logo-bia.png" alt="Bia" width={28} height={28} style={{ borderRadius: 6 }} />
       <div className="logo-text">
         <strong>BIA OPS</strong>
         <span>Marketing operations</span>
       </div>
     </div>
   );
-}
-
-export function Icon({ name }: { name: string }) {
-  return <span className="material-symbols-outlined">{name}</span>;
 }
 
 function roleLabel(role: UserRole) {

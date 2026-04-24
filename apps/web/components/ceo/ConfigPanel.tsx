@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { Icon } from "@/components/shared/Icon";
 
 interface ServiceStatus {
   key: string;
@@ -95,7 +96,7 @@ export function ConfigPanel() {
             </span>
             <span className="badge">~US$ {data.totalCost}/mes</span>
             <button className="icon-button" onClick={load} title="Recargar estado">
-              <span className="material-symbols-outlined">refresh</span>
+              <Icon name="refresh" size={16} />
             </button>
           </div>
         </div>
@@ -135,7 +136,7 @@ export function ConfigPanel() {
                             title="Editar clave"
                             onClick={() => { setEditing(svc.key); setEditValue(""); setSaveMsg(""); }}
                           >
-                            <span className="material-symbols-outlined" style={{ fontSize: 18 }}>edit</span>
+                            <Icon name="edit" size={16} />
                           </button>
                         )}
                       </div>

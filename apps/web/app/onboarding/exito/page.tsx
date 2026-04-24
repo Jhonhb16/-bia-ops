@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Logo } from "@/components/shared/AppShell";
+import { Icon } from "@/components/shared/Icon";
 
 export default function OnboardingSuccessPage() {
   return (
@@ -18,7 +19,7 @@ export default function OnboardingSuccessPage() {
           </div>
           <div className="avatar-row">
             <Link className="button" href="/auth/login">
-              <span className="material-symbols-outlined">login</span>
+              <Icon name="login" size={16} />
               Ir al acceso
             </Link>
             <span className="badge purple">Bia Agency</span>

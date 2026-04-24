@@ -17,6 +17,7 @@ import {
 import type { getExpertDashboard } from "@/lib/data-store";
 import { MetricCard } from "@/components/shared/MetricCard";
 import { AddClientModal } from "@/components/expert/AddClientModal";
+import { Icon } from "@/components/shared/Icon";
 
 type ExpertData = Awaited<ReturnType<typeof getExpertDashboard>>;
 
@@ -132,7 +133,7 @@ export function ExpertWorkspace({ data }: { data: ExpertData }) {
                       <textarea className="textarea" placeholder="Que accion tomaste?" value={note} onChange={(event) => setNote(event.target.value)} />
                       <div className="avatar-row">
                         <button className="button" type="button" disabled={!note.trim()} onClick={() => resolve(alert)}>
-                          <span className="material-symbols-outlined">check</span>
+                          <Icon name="check" size={16} />
                           Guardar y resolver
                         </button>
                         <button className="ghost-button" type="button" onClick={() => setSelectedAlert(null)}>
@@ -143,11 +144,11 @@ export function ExpertWorkspace({ data }: { data: ExpertData }) {
                   ) : (
                     <div className="avatar-row">
                       <button className="button" type="button" onClick={() => setSelectedAlert(alert.id)}>
-                        <span className="material-symbols-outlined">task_alt</span>
+                        <Icon name="task_alt" size={16} />
                         Marcar resuelto
                       </button>
                       <button className="ghost-button" type="button">
-                        <span className="material-symbols-outlined">escalator_warning</span>
+                        <Icon name="escalator_warning" size={16} />
                         Escalar al CEO
                       </button>
                     </div>
@@ -202,7 +203,7 @@ export function ExpertWorkspace({ data }: { data: ExpertData }) {
               <option value="red">Critico</option>
             </select>
             <button className="button" type="button" onClick={() => setShowAddClient(true)}>
-              <span className="material-symbols-outlined">person_add</span>
+              <Icon name="person_add" size={16} />
               Agregar cliente
             </button>
           </div>
@@ -238,7 +239,7 @@ export function ExpertWorkspace({ data }: { data: ExpertData }) {
                 <td><span className={`badge ${row.client.health_status === "green" ? "green" : row.client.health_status === "red" ? "red" : "yellow"}`}>{row.client.health_status}</span></td>
                 <td>
                   <Link className="ghost-button" href={`/dashboard/expert/clientes/${row.client.id}`}>
-                    <span className="material-symbols-outlined">arrow_forward</span>
+                    <Icon name="arrow_forward" size={16} />
                   </Link>
                 </td>
               </tr>
@@ -283,7 +284,7 @@ export function ExpertWorkspace({ data }: { data: ExpertData }) {
               <h2>Generacion manual</h2>
             </div>
             <button className="button" type="button">
-              <span className="material-symbols-outlined">picture_as_pdf</span>
+              <Icon name="picture_as_pdf" size={16} />
               Generar
             </button>
           </div>

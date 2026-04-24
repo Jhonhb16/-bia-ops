@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Logo } from "@/components/shared/AppShell";
+import { Icon } from "@/components/shared/Icon";
 
 export default function AccesoClientePage() {
   const [token, setToken] = useState("");
@@ -47,7 +48,7 @@ export default function AccesoClientePage() {
             {error && <p className="badge red">{error}</p>}
 
             <button className="button" type="submit" disabled={loading} style={{ width: "100%", marginTop: 4 }}>
-              <span className="material-symbols-outlined">lock_open</span>
+              <Icon name="login" size={16} />
               {loading ? "Verificando..." : "Entrar a mi dashboard"}
             </button>
           </form>

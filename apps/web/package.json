@@ -15,6 +15,7 @@
     "@bia-ops/shared": "file:../../packages/shared",
     "@google/generative-ai": "^0.24.0",
     "@supabase/supabase-js": "^2.49.4",
+    "lucide-react": "^1.11.0",
     "next": "14.2.35",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",

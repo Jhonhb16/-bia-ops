@@ -2,7 +2,8 @@
   "permissions": {
     "allow": [
       "Bash(git -C \"D:\\\\Bia ops\" log --oneline -10)",
-      "Bash(git config *)"
+      "Bash(git config *)",
+      "Bash(ssh -o ConnectTimeout=10 -o StrictHostKeyChecking=no -o BatchMode=yes root@187.77.6.189 \"echo connected && pm2 list && echo '---' && df -h / && echo '---' && free -h\")"
     ]
   }
 }

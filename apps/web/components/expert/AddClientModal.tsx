@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import type { Platform, PlanType } from "@bia-ops/shared";
+import { Icon } from "@/components/shared/Icon";
 
 interface ClientFormData {
   business_name: string;
@@ -169,7 +170,7 @@ export function AddClientModal({ onClose, onCreated }: Props) {
             onClick={onClose}
             style={{ background: "none", border: "none", cursor: "pointer", color: "#888", padding: 4, marginTop: -2 }}
           >
-            <span className="material-symbols-outlined" style={{ fontSize: 22 }}>close</span>
+            <Icon name="close" size={20} />
           </button>
         </div>
 
@@ -391,12 +392,12 @@ export function AddClientModal({ onClose, onCreated }: Props) {
               >
                 {loading ? (
                   <>
-                    <span className="material-symbols-outlined" style={{ animation: "spin 1s linear infinite", fontSize: 18 }}>refresh</span>
+                    <Icon name="refresh" size={16} className="spin" />
                     Creando...
                   </>
                 ) : (
                   <>
-                    <span className="material-symbols-outlined">person_add</span>
+                    <Icon name="person_add" size={16} />
                     Crear cliente
                   </>
                 )}

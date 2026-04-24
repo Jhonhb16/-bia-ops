@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import { PLAN_BUDGET_CAPS, PLAN_LABELS, formatCurrency, formatCompact, type ChatMessage } from "@bia-ops/shared";
 import type { getClientDashboard } from "@/lib/data-store";
+import { Icon } from "@/components/shared/Icon";
 
 type ClientDashboard = NonNullable<Awaited<ReturnType<typeof getClientDashboard>>>;
 type MobileTab = "inicio" | "anuncios" | "reportes" | "chat";
@@ -82,7 +83,7 @@ export function ClientPortal({ dashboard }: { dashboard: ClientDashboard }) {
                           : "Accion requerida en tu cuenta"}
                     </h1>
                   </div>
-                  <span className="material-symbols-outlined">monitoring</span>
+                  <Icon name="monitoring" size={22} />
                 </div>
                 <p className="small">
                   Ultima actualizacion: hace pocos minutos. Ultima accion del equipo: {dashboard.lastAction?.description ?? "revision operativa registrada"}.
@@ -144,7 +145,7 @@ export function ClientPortal({ dashboard }: { dashboard: ClientDashboard }) {
                   </tbody>
                 </table>
                 <a className="button" style={{ width: "100%", marginTop: 14 }} href={`https://wa.me/${dashboard.client.whatsapp.replace(/\D/g, "")}`} target="_blank" rel="noreferrer">
-                  <span className="material-symbols-outlined">upgrade</span>
+                  <Icon name="upgrade" size={16} />
                   Mejorar mi plan
                 </a>
               </div>
@@ -217,7 +218,7 @@ export function ClientPortal({ dashboard }: { dashboard: ClientDashboard }) {
             </div>
             <form className="avatar-row" onSubmit={(event) => { event.preventDefault(); void send(); }}>
               <input className="input" placeholder="Escribe tu pregunta..." value={message} onChange={(event) => setMessage(event.target.value)} />
-              <button className="button" type="submit"><span className="material-symbols-outlined">send</span></button>
+              <button className="button" type="submit"><Icon name="send" size={15} /></button>
             </form>
             <p className="small">Responde en segundos. Si requiere accion humana, avisamos al gestor.</p>
           </div>
@@ -279,7 +280,7 @@ function BuildingState({ dashboard }: { dashboard: ClientDashboard }) {
 function NavButton({ tab, active, setTab, icon, label }: { tab: MobileTab; active: MobileTab; setTab: (tab: MobileTab) => void; icon: string; label: string }) {
   return (
     <button className={active === tab ? "active" : ""} type="button" onClick={() => setTab(tab)}>
-      <span className="material-symbols-outlined">{icon}</span>
+      <Icon name={icon} size={18} />
       <div>{label}</div>
     </button>
   );

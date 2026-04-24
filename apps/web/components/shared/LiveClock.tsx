@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { Clock } from "lucide-react";
 
 export function LiveClock() {
   const [now, setNow] = useState<Date | null>(null);
@@ -18,7 +19,7 @@ export function LiveClock() {
 
   return (
     <div className="live-clock" title="Fecha y hora actual del sistema">
-      <span className="material-symbols-outlined" style={{ fontSize: 15, opacity: 0.6 }}>schedule</span>
+      <Clock size={13} strokeWidth={1.5} style={{ opacity: 0.6 }} />
       <span className="live-clock-date">{date}</span>
       <span className="live-clock-time">{time}</span>
     </div>

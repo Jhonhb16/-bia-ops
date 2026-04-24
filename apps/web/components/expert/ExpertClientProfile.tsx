@@ -15,6 +15,7 @@ import {
 import type { getClientDashboard } from "@/lib/data-store";
 import { MiniChart } from "@/components/shared/MiniChart";
 import { MetricCard } from "@/components/shared/MetricCard";
+import { Icon } from "@/components/shared/Icon";
 
 type ClientDashboard = NonNullable<Awaited<ReturnType<typeof getClientDashboard>>>;
 type TabKey = "metricas" | "briefing" | "onboarding" | "acciones" | "herramientas" | "chat";
@@ -159,9 +160,9 @@ export function ExpertClientProfile({ dashboard }: { dashboard: ClientDashboard 
                   style={{ opacity: syncLoading ? 0.6 : 1 }}
                 >
                   {syncLoading ? (
-                    <span className="material-symbols-outlined" style={{ animation: "spin 1s linear infinite" }}>refresh</span>
+                    <Icon name="refresh" size={16} className="spin" />
                   ) : (
-                    <span className="material-symbols-outlined">sync</span>
+                    <Icon name="sync" size={16} />
                   )}
                   {syncLoading ? "Sincronizando..." : "Sincronizar ahora"}
                 </button>
@@ -246,7 +247,7 @@ export function ExpertClientProfile({ dashboard }: { dashboard: ClientDashboard 
               <div className="card card-pad" style={{ boxShadow: "none" }}>
                 <div className="section-title">
                   <h2>Notas</h2>
-                  <button className="ghost-button" type="button"><span className="material-symbols-outlined">edit</span>Editar</button>
+                  <button className="ghost-button" type="button"><Icon name="edit" size={15} />Editar</button>
                 </div>
                 <p className="muted">{dashboard.client.additional_notes ?? "Sin notas adicionales."}</p>
               </div>
@@ -280,7 +281,7 @@ export function ExpertClientProfile({ dashboard }: { dashboard: ClientDashboard 
                   <div className="label">Historial</div>
                   <h2>Acciones registradas</h2>
                 </div>
-                <button className="ghost-button" type="button"><span className="material-symbols-outlined">download</span>CSV</button>
+                <button className="ghost-button" type="button"><Icon name="download" size={15} />CSV</button>
               </div>
               <table className="table">
                 <thead>
@@ -357,7 +358,7 @@ export function ExpertClientProfile({ dashboard }: { dashboard: ClientDashboard 
                 </div>
                 <form className="avatar-row" onSubmit={sendExpertMessage} style={{ marginTop: 14 }}>
                   <input className="input" placeholder="Responder al cliente" value={message} onChange={(event) => setMessage(event.target.value)} />
-                  <button className="button" type="submit"><span className="material-symbols-outlined">send</span></button>
+                  <button className="button" type="submit"><Icon name="send" size={15} /></button>
                 </form>
               </div>
               <div className="card card-pad" style={{ boxShadow: "none" }}>
@@ -431,9 +432,9 @@ function StepRow({ step, done, label, at, onMark, loading }: { step: number; don
               style={{ fontSize: 13, opacity: loading ? 0.6 : 1 }}
             >
               {loading ? (
-                <span className="material-symbols-outlined" style={{ animation: "spin 1s linear infinite", fontSize: 16 }}>refresh</span>
+                <Icon name="refresh" size={16} className="spin" />
               ) : (
-                <span className="material-symbols-outlined" style={{ fontSize: 16 }}>check_circle</span>
+                <Icon name="check_circle" size={16} />
               )}
               Marcar completo
             </button>
@@ -459,7 +460,7 @@ function ToolChecklist({ icon, title, url, items }: { icon: string; title: strin
     <div className="card card-pad" style={{ boxShadow: "none" }}>
       <div className="section-title">
         <div className="avatar-row">
-          <span className="material-symbols-outlined">{icon}</span>
+          <Icon name={icon} size={18} />
           <h2>{title}</h2>
         </div>
         <a className="button" href={url} target="_blank" rel="noreferrer">Abrir</a>

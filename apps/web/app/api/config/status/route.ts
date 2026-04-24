@@ -47,7 +47,7 @@ export async function GET() {
 
   // Claude
   const claudeKey = process.env.CLAUDE_API_KEY ?? "";
-  let claudeStatus: "ok" | "error" | "unconfigured" = claudeKey ? "checking" : "unconfigured";
+  let claudeStatus: "ok" | "error" | "unconfigured" = claudeKey ? "error" : "unconfigured";
   let claudeMsg = claudeKey ? "Verificando..." : "API key no configurada";
   if (claudeKey) {
     try {
@@ -65,7 +65,7 @@ export async function GET() {
     key: "CLAUDE_API_KEY",
     label: "Claude AI (Anthropic)",
     configured: !!claudeKey,
-    status: claudeStatus === "checking" ? "error" : claudeStatus,
+    status: claudeStatus,
     message: claudeMsg,
     costEstimate: "US$ 10–50 / mes (segun uso)",
     category: "ia"
