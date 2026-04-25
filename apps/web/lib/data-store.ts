@@ -19,6 +19,13 @@ import { getSupabaseAdminClient } from "./supabase";
 import { createSeedState } from "./seed-data";
 
 // ---------------------------------------------------------------------------
+// Token expiration map (demo mode — 90-day TTL)
+// ---------------------------------------------------------------------------
+
+const TOKEN_TTL_MS = 90 * 24 * 60 * 60 * 1000;
+const tokenExpiryMap = new Map<string, number>(); // token → expiresAt timestamp
+
+// ---------------------------------------------------------------------------
 // Demo fallback (active when Supabase env vars are not configured)
 // ---------------------------------------------------------------------------
 
@@ -460,6 +467,8 @@ export function getUserById(id: string) {
 }
 
 export function getClientByToken(token: string) {
+  const expires = tokenExpiryMap.get(token);
+  if (expires !== undefined && Date.now() > expires) return undefined;
   return getDemoState().clients.find((c) => c.access_token === token);
 }
 
@@ -539,12 +548,18 @@ export async function getClientDashboard(clientId: string) {
   const budgetCap = PLAN_BUDGET_CAPS[client.plan_type];
   const actions = (actionsRes.data ?? []) as ActionLog[];
 
+  const _now = new Date();
+  const _firstOfMonth = `${_now.getFullYear()}-${String(_now.getMonth() + 1).padStart(2, "0")}-01`;
+  const monthSpend = metrics
+    .filter((m) => m.date >= _firstOfMonth)
+    .reduce((sum, m) => sum + Number(m.spend), 0);
+
   return {
     client,
     metrics,
     latestMetric,
     previousMetric,
-    monthSpend: 0,
+    monthSpend,
     budgetCap,
     lastAction: actions[0] ?? null,
     campaigns: (campaignsRes.data ?? []) as Campaign[],
@@ -560,12 +575,22 @@ export async function getClientDashboard(clientId: string) {
 export async function getCeoDashboard() {
   if (!isDemo()) {
     const supabase = requireAdmin();
-    const [clientsRes, alertsRes, actionsRes, revenueRes, onboardingRes] = await Promise.all([
+    const _ceoNow = new Date();
+    const _ceoFirstOfMonth = `${_ceoNow.getFullYear()}-${String(_ceoNow.getMonth() + 1).padStart(2, "0")}-01`;
+    const _ceoThirtyDaysAgo = new Date(_ceoNow);
+    _ceoThirtyDaysAgo.setDate(_ceoThirtyDaysAgo.getDate() - 30);
+
+    const [clientsRes, alertsRes, actionsRes, revenueRes, onboardingRes, metricsAllRes] = await Promise.all([
       supabase.from("clients").select("*").order("created_at", { ascending: false }),
       supabase.from("alerts").select("*").eq("status", "active"),
       supabase.from("action_logs").select("*").order("created_at", { ascending: false }),
       supabase.from("revenue_tracking").select("*").order("year", { ascending: false }).order("month", { ascending: false }),
-      supabase.from("onboarding_checklists").select("*")
+      supabase.from("onboarding_checklists").select("*"),
+      supabase
+        .from("metric_daily")
+        .select("id, client_id, date, spend, roas, conversions, impressions, reach, clicks, ctr, cpm, cpc, cpa, frequency, revenue_generated")
+        .gte("date", _ceoThirtyDaysAgo.toISOString().slice(0, 10))
+        .order("date", { ascending: false })
     ]);
 
     const allClients = (clientsRes.data ?? []).map(mapClient);
@@ -591,13 +616,27 @@ export async function getCeoDashboard() {
       };
     });
 
-    const healthCards = activeClients.map((client) => ({
-      client,
-      latestMetric: null,
-      monthSpend: 0,
-      activeAlerts: (alertsRes.data ?? []).filter((a) => a.client_id === client.id).length,
-      daysActive: daysBetween(client.created_at)
-    }));
+    const _ceoMetricsByClient = new Map<string, MetricDaily[]>();
+    for (const m of (metricsAllRes.data ?? [])) {
+      const arr = _ceoMetricsByClient.get(m.client_id) ?? [];
+      arr.push(m as MetricDaily);
+      _ceoMetricsByClient.set(m.client_id, arr);
+    }
+
+    const healthCards = activeClients.map((client) => {
+      const clientMetrics = _ceoMetricsByClient.get(client.id) ?? [];
+      const latestMetric = clientMetrics[0] ?? null;
+      const monthSpend = clientMetrics
+        .filter((m) => m.date >= _ceoFirstOfMonth)
+        .reduce((sum, m) => sum + Number(m.spend), 0);
+      return {
+        client,
+        latestMetric,
+        monthSpend,
+        activeAlerts: (alertsRes.data ?? []).filter((a) => a.client_id === client.id).length,
+        daysActive: daysBetween(client.created_at)
+      };
+    });
 
     const latestRevenue = (revenueRes.data ?? [])[0];
     const revenueSeries = Array.from({ length: 6 }, (_, index) => {
@@ -715,23 +754,45 @@ export async function getExpertDashboard() {
 
   // Supabase path
   const supabase = requireAdmin();
-  const [clientsRes, alertsRes, onboardingRes] = await Promise.all([
+  const _expertNow = new Date();
+  const _expertFirstOfMonth = `${_expertNow.getFullYear()}-${String(_expertNow.getMonth() + 1).padStart(2, "0")}-01`;
+  const _expertThirtyDaysAgo = new Date(_expertNow);
+  _expertThirtyDaysAgo.setDate(_expertThirtyDaysAgo.getDate() - 30);
+
+  const [clientsRes, alertsRes, onboardingRes, metricsAllRes] = await Promise.all([
     supabase.from("clients").select("*").order("created_at", { ascending: false }),
     supabase.from("alerts").select("*").neq("status", "resolved").order("created_at", { ascending: false }),
-    supabase.from("onboarding_checklists").select("*")
+    supabase.from("onboarding_checklists").select("*"),
+    supabase
+      .from("metric_daily")
+      .select("id, client_id, date, spend, roas, conversions, impressions, reach, clicks, ctr, cpm, cpc, cpa, frequency, revenue_generated")
+      .gte("date", _expertThirtyDaysAgo.toISOString().slice(0, 10))
+      .order("date", { ascending: false })
   ]);
 
   const allClients = (clientsRes.data ?? []).map(mapClient);
   const allAlerts = (alertsRes.data ?? []).map(mapAlert);
   const allOnboarding = (onboardingRes.data ?? []) as OnboardingChecklist[];
 
+  const _expertMetricsByClient = new Map<string, MetricDaily[]>();
+  for (const m of (metricsAllRes.data ?? [])) {
+    const arr = _expertMetricsByClient.get(m.client_id) ?? [];
+    arr.push(m as MetricDaily);
+    _expertMetricsByClient.set(m.client_id, arr);
+  }
+
   const clients = allClients.map((client) => {
     const activeAlerts = allAlerts.filter((a) => a.client_id === client.id);
     const onboarding = allOnboarding.find((o) => o.client_id === client.id) ?? null;
+    const clientMetrics = _expertMetricsByClient.get(client.id) ?? [];
+    const latestMetric = clientMetrics[0] ?? null;
+    const monthSpend = clientMetrics
+      .filter((m) => m.date >= _expertFirstOfMonth)
+      .reduce((sum, m) => sum + Number(m.spend), 0);
     return {
       client,
-      latestMetric: null,
-      monthSpend: 0,
+      latestMetric,
+      monthSpend,
       activeAlerts,
       lastAction: null,
       onboarding
@@ -960,6 +1021,7 @@ export async function addClient(data: ClientFormData): Promise<{ client: Client;
     const state = getDemoState();
     state.clients.push(client);
     state.onboarding_checklist.push(onboarding);
+    tokenExpiryMap.set(client.access_token, Date.now() + TOKEN_TTL_MS);
     return { client, onboarding };
   }
 
@@ -1022,6 +1084,7 @@ export async function addClient(data: ClientFormData): Promise<{ client: Client;
 
   const mappedClient = mapClient(created as Record<string, unknown>);
   mappedClient.access_token = rawToken;
+  if (rawToken) tokenExpiryMap.set(rawToken, Date.now() + TOKEN_TTL_MS);
 
   return { client: mappedClient, onboarding };
 }

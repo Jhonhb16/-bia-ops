@@ -13,5 +13,6 @@ pnpm-debug.log*
 *.tsbuildinfo
 coverage
 reports
+!apps/api/src/routes/reports/
 tmp
 .runtime
